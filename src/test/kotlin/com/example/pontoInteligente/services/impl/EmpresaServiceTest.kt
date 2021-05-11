@@ -2,6 +2,7 @@ package com.example.pontoInteligente.services.impl
 
 import com.example.pontoInteligente.document.Empresa
 import com.example.pontoInteligente.repository.EmpresaRepository
+import com.kazale.pontointeligente.api.pontointeligenteapi.services.EmpresaService
 import org.junit.jupiter.api.Assertions
 
 import org.junit.jupiter.api.Assertions.*
@@ -16,16 +17,15 @@ import org.springframework.test.context.ActiveProfiles
 import java.util.*
 import kotlin.jvm.Throws
 
-@ActiveProfiles("test")
 @SpringBootTest
 class EmpresaServiceTest {
-    @Autowired
-    val empresaService: EmpresaService? = null
-
     //insere classe vazia para teste, sem alterar no banco de dados
     @MockBean
     private val empresaRepository: EmpresaRepository? = null
     private val CNPJ = "12345678900"
+
+    @Autowired
+    val empresaService: EmpresaService? = null
 
     @BeforeEach //executar antes do teste
     @Throws //lançar uma exceção no mockito
@@ -48,5 +48,6 @@ class EmpresaServiceTest {
         Assertions.assertNotNull(empresa)
     }
 
-    private fun empresa(): Empresa = Empresa("Razao Social", CNPJ, "1")
+    private fun empresa(): Empresa =
+        Empresa("Razao Social", CNPJ, "1")
 }

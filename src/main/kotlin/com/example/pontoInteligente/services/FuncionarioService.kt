@@ -1,4 +1,4 @@
-package com.example.pontoInteligente.services.impl
+package com.example.pontoInteligente.services
 
 import com.example.pontoInteligente.document.Funcionario
 

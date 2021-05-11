@@ -3,6 +3,7 @@ package com.example.pontoInteligente.services.impl
 import com.example.pontoInteligente.document.Funcionario
 import com.example.pontoInteligente.enum.PerfilEnum
 import com.example.pontoInteligente.repository.FuncionarioRepository
+import com.example.pontoInteligente.services.FuncionarioService
 import com.example.pontoInteligente.utils.SenhasUteis
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
@@ -16,15 +17,15 @@ import java.util.*
 
 @SpringBootTest
 class FuncionarioServiceTest {
-    @Autowired
-    private val funcionarioService: FuncionarioService? = null
-
     @MockBean
     private val funcionarioRepository: FuncionarioRepository? = null
     private val email: String = "email@email.com"
     private val cpf: String = "34234855948"
     private val id: String = "1"
     private val senha: String = "123456"
+
+    @Autowired
+    private val funcionarioService: FuncionarioService? = null
 
     @BeforeEach
     @Throws(Exception::class)
@@ -42,7 +43,25 @@ class FuncionarioServiceTest {
         Assertions.assertNotNull(funcionario)
     }
 
-    fun funcionario(): Funcionario =
+    @Test
+    fun testeBuscarFuncionarioPorId() {
+        val funcionario: Funcionario? = this.funcionarioService?.buscarPorId(id)
+        Assertions.assertNotNull(funcionario)
+    }
+
+    @Test
+    fun testeBuscarFuncionarioPorEmail() {
+        val funcionario: Funcionario? = this.funcionarioService?.buscarPorEmail(email)
+        Assertions.assertNotNull(funcionario)
+    }
+
+    @Test
+    fun testeBuscarFuncionarioPorCpf() {
+        val funcionario: Funcionario? = this.funcionarioService?.buscarPorCpf(cpf)
+        Assertions.assertNotNull(funcionario)
+    }
+
+    private fun funcionario(): Funcionario =
         Funcionario(
             "Nome",
             email,
