@@ -41,7 +41,7 @@ class PontoInteligenteApplication (
 			SenhasUteis().gerarBCrypt("123456"),
 			"44456789012",
 			PerfilEnum.ROLE_USUARIO,
-			empresa.id
+			empresa.id!!
 		)
 		funcionarioRepository.save(funcionario)
 
