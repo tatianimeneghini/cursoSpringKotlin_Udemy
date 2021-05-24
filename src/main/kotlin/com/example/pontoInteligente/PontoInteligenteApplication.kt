@@ -1,4 +1,4 @@
-package com.kazale.example.pontoInteligente
+package com.example.pontoInteligente
 
 import com.example.pontoInteligente.document.Empresa
 import com.example.pontoInteligente.document.Funcionario
@@ -41,7 +41,8 @@ class PontoInteligenteApplication (
 			SenhasUteis().gerarBCrypt("123456"),
 			"44456789012",
 			PerfilEnum.ROLE_USUARIO,
-			empresa.id!!)
+			empresa.id
+		)
 		funcionarioRepository.save(funcionario)
 
 		System.out.println("Empresa ID: " + empresa.id)

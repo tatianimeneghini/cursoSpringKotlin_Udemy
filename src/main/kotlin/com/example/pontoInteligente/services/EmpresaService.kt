@@ -1,4 +1,4 @@
-package com.kazale.pontointeligente.api.pontointeligenteapi.services
+package com.pontointeligente.api.pontointeligenteapi.services
 
 import com.example.pontoInteligente.document.Empresa
 
