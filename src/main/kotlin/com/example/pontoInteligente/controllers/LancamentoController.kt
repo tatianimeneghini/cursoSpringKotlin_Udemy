@@ -40,10 +40,11 @@ class LancamentoController(
     // A função irá retornar a data class criada Response
     @PostMapping
     fun adicionar(@Valid @RequestBody lancamentoDto: LancamentoDto,
-                  result: BindingResult
-    ): ResponseEntity<Response<LancamentoDto>> {
+                  result: BindingResult): ResponseEntity<Response<LancamentoDto>> {
         val response: Response<LancamentoDto> = Response<LancamentoDto>()
         validarFuncionario(lancamentoDto, result)
+        // Implementação da função que converte o DTO para Lançamento.
+        val lancamento: Lancamento = converterDtoParaLancamento(lancamentoDto, result)
 
         // Tratamento do erro com hasErrors que retorna um booleano.
         // Caso haja erro, irá popular cada erro em todas mensagens de erro, deve adicionar a mensagem padrão.
@@ -55,8 +56,6 @@ class LancamentoController(
             return ResponseEntity.badRequest().body(response)
         }
 
-        // Implementação da função que converte o DTO para Lançamento.
-        val lancamento: Lancamento = converterDtoParaLancamento(lancamentoDto, result)
         lancamentoService.persistir(lancamento)
         response.data = converterLancamentoDto(lancamento)
         return ResponseEntity.ok(response)
@@ -82,8 +81,7 @@ class LancamentoController(
     // Instrução única de instanciação do objeto LancamentoDto, é possível condensar com o igual, sem as chaves.
     // dateFormat - formatar a data.
     private fun converterLancamentoDto(lancamento: Lancamento): LancamentoDto =
-        LancamentoDto(dateFormat.format(
-            lancamento.data),
+        LancamentoDto(dateFormat.format(lancamento.data),
             lancamento.tipo.toString(),
             lancamento.descricao,
             lancamento.localizacao,
@@ -96,13 +94,12 @@ class LancamentoController(
         // Se o id for diferente de nulo, buscar por ID através do serviço de Lançamento.
         // Se o id retornado for nulo, adicionar erro no resultado com mensagem padrão.
         if (lancamentoDto.id != null) {
-            val lanc: Lancamento? = lancamentoService.buscarPorId(lancamentoDto.id)
+            val lanc: Lancamento? = lancamentoService.buscarPorId(lancamentoDto.id!!)
             if (lanc == null) result.addError(ObjectError("lancamento",
                         "Lançamento não encontrado."))
         }
         // parse - método para converter o formato da data em uma string.
-        return Lancamento(dateFormat.parse(
-                lancamentoDto.data),
+        return Lancamento(dateFormat.parse(lancamentoDto.data),
                 TipoEnum.valueOf(lancamentoDto.tipo!!),
                 lancamentoDto.funcionarioId!!,
                 lancamentoDto.decricao,
