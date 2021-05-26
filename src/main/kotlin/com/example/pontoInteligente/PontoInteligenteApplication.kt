@@ -21,21 +21,21 @@ class PontoInteligenteApplication (
 		empresaRepository.deleteAll() //deletar toda empresa do Repository na aplicação
 		funcionarioRepository.deleteAll()
 
-		val empresa: Empresa = Empresa(
+		var empresa: Empresa = Empresa(
 			"Empresa",
 			"1000234567890")
-		empresaRepository.save(empresa) //persistir os dados na base
+		empresa  = empresaRepository.save(empresa) //persistir os dados na base
 
-		val admin: Funcionario = Funcionario(
+		var admin: Funcionario = Funcionario(
 			"Admin",
 			"admin@empresa.com",
 			SenhasUteis().gerarBCrypt("987654"),
 			"12345678900",
 			PerfilEnum.ROLE_ADMIN,
 			empresa.id!!) //opcional
-		funcionarioRepository.save(admin)
+		admin = funcionarioRepository.save(admin)
 
-		val funcionario: Funcionario = Funcionario(
+		var funcionario: Funcionario = Funcionario(
 			"Funcionario",
 			"funcionario@empresa.com",
 			SenhasUteis().gerarBCrypt("123456"),
@@ -43,7 +43,7 @@ class PontoInteligenteApplication (
 			PerfilEnum.ROLE_USUARIO,
 			empresa.id!!
 		)
-		funcionarioRepository.save(funcionario)
+		funcionario = funcionarioRepository.save(funcionario)
 
 		System.out.println("Empresa ID: " + empresa.id)
 		System.out.println("Admin ID: " + admin.id)
