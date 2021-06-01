@@ -8,13 +8,13 @@ import com.example.pontoInteligente.response.Response
 import com.example.pontoInteligente.services.FuncionarioService
 import com.example.pontoInteligente.services.LancamentoService
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.BindingResult
 import org.springframework.validation.ObjectError
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import java.text.SimpleDateFormat
 import javax.validation.Valid
 
@@ -30,9 +30,9 @@ class LancamentoController(
 
     // @Value - anotação do valor vindo do application.properties
     @Value("\${paginacao.qntd_por_pagina}")
-    val qntd_por_pagina: Int = 15 //subscreve o valor
+    val qtdPorPagina: Int = 15 //subscreve o valor
 
-    // @PostMapping - indica o método HTTP do tipo post.
+    // @PostMapping - indica o método HTTP do tipo POST.
     // @Valid - anotação que valida e executa as anotação @get do arquivo LancamentoDto.
     // @RequestBody - anotação que a requisição deve ter um body do tipo json.
     // result - armazena o resulta na variável do tipo da interface de result.
@@ -43,8 +43,6 @@ class LancamentoController(
                   result: BindingResult): ResponseEntity<Response<LancamentoDto>> {
         val response: Response<LancamentoDto> = Response<LancamentoDto>()
         validarFuncionario(lancamentoDto, result)
-        // Implementação da função que converte o DTO para Lançamento.
-        val lancamento: Lancamento = converterDtoParaLancamento(lancamentoDto, result)
 
         // Tratamento do erro com hasErrors que retorna um booleano.
         // Caso haja erro, irá popular cada erro em todas mensagens de erro, deve adicionar a mensagem padrão.
@@ -56,8 +54,55 @@ class LancamentoController(
             return ResponseEntity.badRequest().body(response)
         }
 
+        // Implementação da função que converte o DTO para Lançamento.
+        val lancamento: Lancamento = converterDtoParaLancamento(lancamentoDto, result)
         lancamentoService.persistir(lancamento)
         response.data = converterLancamentoDto(lancamento)
+        return ResponseEntity.ok(response)
+    }
+
+    // @GetMapping - indica o método HTTP do tipo GET.
+    // @PathVariable - anotação que indica que o parâmetro será passado através da url.
+    // Objeto response do lançamento.
+    // Buscar o id pelo Serviço do Lançamento que pode retornar nulo.
+    // Tratamento do erro para lançamento nulo, adicionando um novo erro e retornar status HTTP 404.
+    @GetMapping("/{id}")
+    fun listarPorId(@PathVariable("id") id: String): ResponseEntity<Response<LancamentoDto>> {
+        val response: Response<LancamentoDto> = Response<LancamentoDto>()
+        val lancamento: Lancamento? = lancamentoService.buscarPorId(id)
+
+        if (lancamento == null) {
+            response.erros.add("Lançamento não encontrado para o id $id")
+            return ResponseEntity.badRequest().body(response)
+        }
+
+        response.data = converterLancamentoDto(lancamento)
+        return ResponseEntity.ok(response)
+    }
+
+    // @RequestParam - anotação que indica o parâmetro da requisição.
+    @GetMapping("/funcionario/{funcionarioId}")
+    fun listarFuncionarioId(@PathVariable("funcionarioId") funcionarioId: String,
+                            @RequestParam(value = "pag", defaultValue = "0") pag: Int,
+                            @RequestParam(value = "ord", defaultValue = "id") ord: String,
+                            @RequestParam(value = "dir", defaultValue = "DESC") dir: String
+                            ): ResponseEntity<Response<Page<LancamentoDto>>> {
+        val response: Response<Page<LancamentoDto>> = Response<Page<LancamentoDto>>()
+
+        // Objeto para obter os dados do PageRequest.
+        val pageRequest: PageRequest = PageRequest.of(pag, qtdPorPagina, Sort.Direction.valueOf(dir), ord)
+
+        // Consulta do Serviço para buscar funcionário Id.
+        val lancamentos: Page<Lancamento> = lancamentoService.buscarPorFuncionarioId(funcionarioId, pageRequest)
+
+        // Converter os dados de lançamento para Lançamento DTO.
+        // map - intera todos os elementos da lista e realiza a ação de converterLancamentoDto.
+        val lancamentoDto: Page<LancamentoDto> = lancamentos.map { lancamento ->
+            converterLancamentoDto(lancamento)
+        }
+
+        // Definir os dados para o response e retorna o status HTTP 200.
+        response.data = lancamentoDto
         return ResponseEntity.ok(response)
     }
 
@@ -79,6 +124,7 @@ class LancamentoController(
     }
 
     // Instrução única de instanciação do objeto LancamentoDto, é possível condensar com o igual, sem as chaves.
+    // Formatação dos dados pelo lançamento DTO.
     // dateFormat - formatar a data.
     private fun converterLancamentoDto(lancamento: Lancamento): LancamentoDto =
         LancamentoDto(dateFormat.format(lancamento.data),

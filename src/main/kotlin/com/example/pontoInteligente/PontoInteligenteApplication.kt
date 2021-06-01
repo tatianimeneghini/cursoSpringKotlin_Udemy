@@ -5,6 +5,7 @@ import com.example.pontoInteligente.document.Funcionario
 import com.example.pontoInteligente.enum.PerfilEnum
 import com.example.pontoInteligente.repository.EmpresaRepository
 import com.example.pontoInteligente.repository.FuncionarioRepository
+import com.example.pontoInteligente.repository.LancamentoRepository
 import com.example.pontoInteligente.utils.SenhasUteis
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -13,13 +14,15 @@ import org.springframework.boot.runApplication
 @SpringBootApplication
 class PontoInteligenteApplication (
 	val empresaRepository: EmpresaRepository,
-	val funcionarioRepository: FuncionarioRepository) : CommandLineRunner {
+	val funcionarioRepository: FuncionarioRepository,
+ 	val lancamentoRepository: LancamentoRepository) : CommandLineRunner {
 	// CommandLineRunner ajuda preparar o microsserviço ou enviar dados para outro microsserviço
 	// e sempre executa um bloco de código antes de iniciar a aplicação.
 
 	override fun run(vararg args: String?) {
 		empresaRepository.deleteAll() //deletar toda empresa do Repository na aplicação
 		funcionarioRepository.deleteAll()
+		lancamentoRepository.deleteAll()
 
 		var empresa: Empresa = Empresa(
 			"Empresa",
