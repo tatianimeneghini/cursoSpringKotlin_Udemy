@@ -106,6 +106,43 @@ class LancamentoController(
         return ResponseEntity.ok(response)
     }
 
+    // @PutMapping - indica o método HTTP do tipo PUT.
+    @PutMapping("/{id}")
+    fun atualizar(@PathVariable("id") id: String,
+                  @Valid @RequestBody lancamentoDto: LancamentoDto,
+                  result: BindingResult): ResponseEntity<Response<LancamentoDto>> {
+        val response: Response<LancamentoDto> = Response<LancamentoDto>()
+        validarFuncionario(lancamentoDto, result)
+        lancamentoDto.id = id
+        val lancamento: Lancamento = converterDtoParaLancamento(lancamentoDto, result)
+
+        if (result.hasErrors()) {
+            result.allErrors.forEach { erro ->
+                erro.defaultMessage?.let { response.erros.add(it) }
+            }
+            return ResponseEntity.badRequest().body(response)
+        }
+
+        lancamentoService.persistir(lancamento)
+        response.data = converterLancamentoDto(lancamento)
+        return ResponseEntity.ok(response)
+    }
+
+    // @DeleteMapping - indica o método HTTP do tipo DELETE.
+    @DeleteMapping("/{id}")
+    fun remover(@PathVariable("id") id: String): ResponseEntity<Response<String>> {
+        val response: Response<String> = Response<String>()
+        val lancamento: Lancamento? = lancamentoService.buscarPorId(id)
+
+        if (lancamento == null) {
+            response.erros.add("Erro ao remover lançamento. Registro não encontrado para o id $id")
+            return ResponseEntity.badRequest().body(response)
+        }
+
+        lancamentoService.remover(id)
+        return ResponseEntity.ok(Response<String>())
+    }
+
     private fun validarFuncionario(lancamentoDto: LancamentoDto, result: BindingResult) {
         // Caso o ID do funcionário no lançamento DTO seja nulo, adiciona erro.
         if (lancamentoDto.funcionarioId == null) {
