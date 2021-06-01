@@ -12,3 +12,9 @@ As alterações necessárias foram realizadas baseadas na atualização das vers
 ### Rodar projeto
 - [ ] Rodar na linha de comando `mongo` para conectar ao Banco de Dados;
 - [ ] Run arquivo `PontoInteligenteApplication.Kt` em `src/main/kotlin/com.example.pontoInteligente`.
+
+### Requisições via Postman
+Para enviar as requisições via Postman com a url `localhost:8080` e verificar nos arquivos da pasta `src/main/kotlin/com.example.pontoInteligente\controllers`.
+* Authorization: inserir autenticação básica `Basic Auth`, com usuário `user` e senha que aparece quando a aplicação é iniciada.
+* Verificar endpoints para cada método HTPP.
+* Verificar o preenchimento do body em formato `json`.
