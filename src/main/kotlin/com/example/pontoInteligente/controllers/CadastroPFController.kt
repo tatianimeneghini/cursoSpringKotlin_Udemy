@@ -34,10 +34,10 @@ class CadastroPFController(val empresaService: EmpresaService,
             result.allErrors.forEach { erro -> erro.defaultMessage?.let { response.erros.add(it) } }
         }
 
-        var funcionario: Funcionario = converterDtoParaFuncionario(cadastroPFDto, empresa!!)
+        val funcionario: Funcionario = converterDtoParaFuncionario(cadastroPFDto, empresa!!)
 
         funcionarioService.persistir(funcionario)
-        response.data = converterCadastroPFDto(funcionario, empresa!!)
+        response.data = converterCadastroPFDto(funcionario, empresa)
 
         return ResponseEntity.ok(response)
     }
