@@ -10,8 +10,9 @@ As alterações necessárias foram realizadas baseadas na atualização das vers
 - [ ] Build do projeto com Gradle, atalho `Ctrl + F9`.
 
 ### Rodar projeto
-- [ ] Rodar na linha de comando `mongo` para conectar ao Banco de Dados;
-- [ ] Run arquivo `PontoInteligenteApplication.Kt` em `src/main/kotlin/com.example.pontoInteligente`.
+1. Inicializar o MongoDB com na linha de comando `mongod`;
+2. Inicializar o Mongo Shell na linha de comando `mongo`;
+3. Run arquivo `PontoInteligenteApplication.Kt` em `src/main/kotlin/com.example.pontoInteligente`.
 
 ### Requisições via Postman
 Para enviar as requisições via Postman com a url `localhost:8080` e verificar nos arquivos da pasta `src/main/kotlin/com.example.pontoInteligente\controllers`.
