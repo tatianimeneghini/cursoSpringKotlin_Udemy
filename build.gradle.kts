@@ -18,7 +18,9 @@ repositories {
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
 	implementation("org.springframework.boot:spring-boot-starter-security")
-	implementation("org.springframework.security:spring-security-core:5.2.2.RELEASE")
+	implementation("org.springframework.boot:spring-boot-starter-web")
+//	implementation("org.springframework.security:spring-security-core:5.2.2.RELEASE")
+//	implementation("org.springframework.web.reactive.config.WebFluxConfigurer")
 	implementation ("org.springframework.security:spring-security-config:5.2.2.RELEASE")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
