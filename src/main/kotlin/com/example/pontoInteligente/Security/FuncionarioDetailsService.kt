@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 
 // UserDetailsService - interface core que carrega as informações do usuário.
 @Service
-class FuncionarioDetailService(val funcionarioService: FuncionarioService) : UserDetailsService {
+class FuncionarioDetailsService(val funcionarioService: FuncionarioService) : UserDetailsService {
 
     // loadUserByUsername - localiza o usuário baseado no username.
     override fun loadUserByUsername(username: String?): UserDetails {
