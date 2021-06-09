@@ -61,21 +61,12 @@ class LancamentoControllerTest {
     fun testeCadastrarLancamento() {
         val lancamento: Lancamento = obterDadosLancamento()
 
-        var funcionarioTeste = Funcionario(
-            "Ana",
-            "ana@email.com",
-            SenhasUteis().gerarBCrypt("1234").let { it },
-            "345.684.920-99",
-            PerfilEnum.ROLE_USUARIO,
-            "2"
-        )
-
         // BDDMockito - framework que cria um objeto mock.
         // given - quando o método buscarPorId do Serviço do Funcionário for chamado.
         // willReturn - deve retornar um objeto qualquer.
         BDDMockito
             .given<Funcionario>(funcionarioService?.buscarPorId(idFuncionario))
-            .willReturn(funcionarioTeste)
+            .willReturn(funcionario())
         BDDMockito
             .given(lancamentoService?.persistir(obterDadosLancamento()))
             .willReturn(lancamento)
@@ -92,16 +83,32 @@ class LancamentoControllerTest {
             .content(obterJsonRequisicaoPost())
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
+            .andExpect(status().isOk)
             .andExpect(jsonPath("$.data.tipo").value(tipo))
             .andExpect(jsonPath("$.data.data").value(dateFormat.format(data)))
             .andExpect(jsonPath("$.data.funcionarioId").value(idFuncionario))
-            .andExpect(jsonPath("$.erros").isEmpty())
+            .andExpect(jsonPath("$.erros").isEmpty)
+    }
+
+    @Test
+    @WithMockUser
+    @Throws(Exception::class)
+    fun testCadastrarLancamentoFuncionarioIdInvalido() {
+        BDDMockito.given<Funcionario>(funcionarioService?.buscarPorId(idFuncionario))
+            .willReturn(null)
+
+        mvc!!.perform(MockMvcRequestBuilders.post(urlBase)
+            .content(obterJsonRequisicaoPost())
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.erros").value("Funcionário não encontrado. ID inexistente."))
+            .andExpect(jsonPath("$.data").isEmpty)
     }
 
     @Test
     @Throws(Exception::class)
-    @WithMockUser(username = "admin@admin.com.br", roles = arrayOf("ADMIN"))
+    @WithMockUser(username = "admin@admin.com.br", roles = ["ADMIN"])
     fun testeRemoverLancamento() {
         BDDMockito
             .given<Lancamento>(lancamentoService?.buscarPorId(idLancamento))
@@ -110,14 +117,26 @@ class LancamentoControllerTest {
         // delete - método HTTP DELETE.
         mvc!!.perform(MockMvcRequestBuilders.delete(urlBase + idLancamento)
             .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
+            .andExpect(status().isForbidden)
+    }
+
+    @Test
+    @WithMockUser
+    @Throws(Exception::class)
+    fun testRemoverLancamentoAcessoNegado() {
+        BDDMockito.given<Lancamento>(lancamentoService?.buscarPorId(idLancamento))
+            .willReturn(obterDadosLancamento())
+
+        mvc!!.perform(MockMvcRequestBuilders.delete(urlBase + idLancamento)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isForbidden)
     }
 
     // ObjectMapper - cria um objeto.
     // writeValueAsString - converte um objeto em string.
     @Throws(JsonProcessingException::class)
     private fun obterJsonRequisicaoPost(): String {
-        val lancamentoDto: LancamentoDto = LancamentoDto(
+        val lancamentoDto = LancamentoDto(
             dateFormat.format(data),
             tipo,
             "Descriçãawm",
@@ -137,4 +156,8 @@ class LancamentoControllerTest {
             "1.243,4.345",
             idLancamento
         )
+
+    private fun funcionario(): Funcionario =
+        Funcionario("Nome", "email@email.com", SenhasUteis().gerarBCrypt("123456"),
+            "23145699876", PerfilEnum.ROLE_USUARIO, idFuncionario)
 }
